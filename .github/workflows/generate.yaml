@@ -49,14 +49,16 @@ jobs:
     - name: Set Tag
       id: current-datetime
       run: echo "CURRENT_DATETIME=$(date +'%Y-%m-%d-%H_%M_%S%z')" >> "$GITHUB_OUTPUT"
-    - name: Build Release
+    - name: Install hub
       run: |
-        gh release create ${{ steps.current-datetime.outputs.CURRENT_DATETIME }} \
-        --title ${{ steps.current-datetime.outputs.CURRENT_DATETIME }} \
-        --notes "Release notes or description" \
-        --draft \
-        out/${{ github.actor }}_resume.html \
-        out/${{ github.actor }}_resume.md \
-        out/${{ github.actor }}_resume.pdf
+        sudo snap install hub --classic
+    - name: Build Release
+      shell: bash
+      run: |
+        hub release create ${{ steps.current-datetime.outputs.CURRENT_DATETIME }} \
+        -m ${{ steps.current-datetime.outputs.CURRENT_DATETIME }} \
+        -a out/${{ github.actor }}_resume.html \
+        -a out/${{ github.actor }}_resume.md \
+        -a out/${{ github.actor }}_resume.pdf
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
